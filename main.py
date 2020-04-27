@@ -14,7 +14,7 @@ DATE_END_KEY = 'fin_H'
 labels = {'Home': Label('Home', RED), 'Second': Label('Second', GREEN), 'Other': Label('Other', BLUE)}
 
 SELECTED_DEVICES = ['Device 64']
-SELECT_ALL = False
+SELECT_ALL = True
 SELECTED_DATE_FROM = date(2018, 1, 22)
 SELECTED_DATE_TO = date(2018, 1, 30)
 SELECT_ALL_DATE = True
@@ -46,7 +46,7 @@ else:
             date_begin = datetime.datetime.strptime(date_begin_unparsed, DATE_FORMAT)
             date_end = datetime.datetime.strptime(date_end_unparsed, DATE_FORMAT)
 
-            meeting = Meeting(date_begin, date_end, labels=[labels[raw['motif']]])
+            meeting = Meeting(date_begin, date_end, labels=[labels[raw['motif']]], loc_id=raw['ID_sejour_1km'])
             timetables[device].add_meeting(meeting)
 
     for device in timetables.keys():

@@ -1,3 +1,5 @@
+import random
+
 import timetable2.tools
 import cairo
 from datetime import datetime, date
@@ -13,13 +15,19 @@ class Label:
 
 
 class Meeting:
-    def __init__(self, date_begin: datetime, date_end: datetime, labels=None, title=""):
+    locations_id = {}
+
+    def __init__(self, date_begin: datetime, date_end: datetime, labels=None, title="", loc_id = ""):
         if labels is None:
             labels = []
+        if loc_id not in Meeting.locations_id.keys():
+            Meeting.locations_id[loc_id] = (random.random() * 0.6, random.random() * 0.6, random.random())
+
         self.labels = labels
         self.date_begin = date_begin
         self.date_end = date_end
         self.title = title
+        self.loc_id = loc_id
 
     def __str__(self):
         tostr = "("
@@ -82,8 +90,10 @@ class Timetable:
     # TODO : Add meeting label, title, etc..
     def display_meeting(self, meeting, ctx, x, y, w, h, dp_label=False):
 
-
-        pat = cairo.SolidPattern(*meeting.labels[0].color)
+        if meeting.labels[0].name == "Other":
+            pat = cairo.SolidPattern(*Meeting.locations_id[meeting.loc_id])
+        else:
+            pat = cairo.SolidPattern(*meeting.labels[0].color)
         ctx.rectangle(x, y, w, h)
         ctx.set_source(pat)
         ctx.fill()
