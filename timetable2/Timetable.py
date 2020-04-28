@@ -15,13 +15,37 @@ class Label:
 
 
 class Meeting:
-    locations_id = {}
+    locations_count = {}
+    locations_color = {}
+
+    @staticmethod
+    def generate_color(grad_min, grad_max):
+        nb_loc = len(Meeting.locations_count)
+        rmin, gmin, bmin = grad_min
+        rmax, gmax, bmax = grad_max
+
+        rdiff = rmax - rmin
+        gdiff = gmax - gmin
+        bdiff = bmax - bmin
+
+        max_lieux = 0
+
+        for (index, lieux_key) in enumerate(sorted(Meeting.locations_count.keys())):
+            factor = index / nb_loc
+            newr = rmin + rdiff * factor
+            newg = gmin + gdiff * factor
+            newb = bmin + bdiff * factor
+            Meeting.locations_color[lieux_key] = (newr, newg, newb)
+
 
     def __init__(self, date_begin: datetime, date_end: datetime, labels=None, title="", loc_id = ""):
         if labels is None:
-            labels = []
-        if loc_id not in Meeting.locations_id.keys():
-            Meeting.locations_id[loc_id] = (random.random() * 0.6, random.random() * 0.6, random.random())
+            labels = {}
+        if loc_id not in Meeting.locations_count.keys():
+            Meeting.locations_count[loc_id] = 0
+            Meeting.locations_color[loc_id] = (random.random() * 0.6, random.random() * 0.6, random.random())
+
+        Meeting.locations_count[loc_id] += 1
 
         self.labels = labels
         self.date_begin = date_begin
@@ -91,9 +115,10 @@ class Timetable:
     def display_meeting(self, meeting, ctx, x, y, w, h, dp_label=False):
 
         if meeting.labels[0].name == "Other":
-            pat = cairo.SolidPattern(*Meeting.locations_id[meeting.loc_id])
+            pat = cairo.SolidPattern(*Meeting.locations_color[meeting.loc_id])
         else:
             pat = cairo.SolidPattern(*meeting.labels[0].color)
+
         ctx.rectangle(x, y, w, h)
         ctx.set_source(pat)
         ctx.fill()
@@ -200,6 +225,14 @@ class Timetable:
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
         ctx = cairo.Context(surface)
         ctx.scale(width, height)
+
+        pat = cairo.SolidPattern(*(0, 0, 0))
+        ctx.rectangle(0, 0, 1, 1)
+        ctx.set_source(pat)
+        ctx.fill()
+
+        # On génére les couleurs du rouge vers le bleu
+        Meeting.generate_color((1, 0, 0), (0, 0, 1))
 
         dates = timetable2.tools.date_range(from_date, to_date)
         nb_dates = len(dates)

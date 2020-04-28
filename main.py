@@ -14,7 +14,7 @@ DATE_END_KEY = 'fin_H'
 labels = {'Home': Label('Home', RED), 'Second': Label('Second', GREEN), 'Other': Label('Other', BLUE)}
 
 SELECTED_DEVICES = ['Device 64']
-SELECT_ALL = True
+SELECT_ALL = False
 SELECTED_DATE_FROM = date(2018, 1, 22)
 SELECTED_DATE_TO = date(2018, 1, 30)
 SELECT_ALL_DATE = True
